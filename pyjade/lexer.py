@@ -329,10 +329,9 @@ class Lexer(object):
                         if not ns.key:
                             return
                         # ns.literal = ns.quote
-                        if not ns.literal:
-                            if '!' == ns.key[-1]:
-                                ns.literal = True
-                                ns.key = ns.key[:-1]
+                        if not ns.literal and '!' == ns.key[-1]:
+                            ns.literal = True
+                            ns.key = ns.key[:-1]
                         ns.key = ns.key.strip("'\"")
                         if not ns.val:
                             tok.attrs[ns.key] = True
@@ -388,9 +387,7 @@ class Lexer(object):
                         states.append('string')
                         ns.val += c
                         ns.quote = c
-                elif '' == c:
-                    pass
-                else:
+                elif '' != c:
                     s = state()
                     ns.literal = ns.literal and (s in ('key', 'string') or c in str_nums)
                     # print c, s, ns.literal
@@ -449,7 +446,7 @@ class Lexer(object):
             if '\n' == self.input[0]:
                 return
             i = self.input.find('\n')
-            if -1 == i:
+            if i == -1:
                 i = len(self.input)
             str = self.input[:i]
             self.consume(len(str))

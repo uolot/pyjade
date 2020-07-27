@@ -155,5 +155,5 @@ def test_case_generator():
         filenames = list(map(lambda x:x.replace('.jade',''),filenames))
         for processor in processors.keys():
             for filename in filenames:
-                if not filename in exclusions[processor]:
+                if filename not in exclusions[processor]:
                     yield run_case, filename,processor

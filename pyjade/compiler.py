@@ -190,7 +190,7 @@ class Compiler(object):
             self.instring = False
             self.visit(tag.block)
 
-            if self.pp and not name in self.inlineTags and not textOnly:
+            if self.pp and name not in self.inlineTags and not textOnly:
                 self.buffer('\n' + '  ' * (self.indents-1))
 
             self.buffer('</%s>' % name)
@@ -340,7 +340,7 @@ class Compiler(object):
     def visitAttributes(self, attrs):
         temp_attrs = []
         for attr in attrs:
-            if (not self.useRuntime and not attr['name']=='class') or attr['static']: #
+            if not self.useRuntime and attr['name'] != 'class' or attr['static']: #
                 if temp_attrs:
                     self.visitDynamicAttributes(temp_attrs)
                     temp_attrs = []

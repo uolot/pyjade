@@ -111,7 +111,6 @@ class PyJadeExtension(Extension):
         self.options["variable_end_string"] = environment.variable_end_string
 
     def preprocess(self, source, name, filename=None):
-        if (not name or
-           (name and not os.path.splitext(name)[1] in self.file_extensions)):
+        if not name or os.path.splitext(name)[1] not in self.file_extensions:
             return source
         return process(source,filename=name,compiler=Compiler,**self.options)

@@ -7,9 +7,8 @@ from pyjade.runtime import is_mapping, iteration, escape
 import six
 
 def process_param(key, value, terse=False):
-    if terse:
-        if (key == value) or (value is True):
-            return key
+    if terse and ((key == value) or (value is True)):
+        return key
     if isinstance(value, six.binary_type):
         value = value.decode('utf8')
     return '''%s="%s"''' % (key, value)
@@ -49,7 +48,7 @@ class HTMLCompiler(pyjade.compiler.Compiler):
     def _get_value(self, attr):
         value = attr['val']
         if attr['static']:
-            return attr['val']
+            return value
         if isinstance(value, six.string_types):
             return self._do_eval(value)
         else:
@@ -58,10 +57,7 @@ class HTMLCompiler(pyjade.compiler.Compiler):
     def _make_mixin(self, mixin):
         arg_names = [arg.strip() for arg in mixin.args.split(",")]
         def _mixin(self, args):
-            if args:
-                arg_values = self._do_eval(args)
-            else:
-                arg_values = []
+            arg_values = self._do_eval(args) if args else []
             local_context = dict(zip(arg_names, arg_values))
             with local_context_manager(self, local_context):
                 self.visitBlock(mixin.block)
@@ -86,10 +82,7 @@ class HTMLCompiler(pyjade.compiler.Compiler):
         self.global_context[assignment.name] = self._do_eval(assignment.val)
 
     def visitConditional(self, conditional):
-        if not conditional.sentence:
-            value = False
-        else:
-            value = self._do_eval(conditional.sentence)
+        value = self._do_eval(conditional.sentence) if conditional.sentence else False
         if TYPE_CODE[conditional.type](value):
             self.visit(conditional.block)
         elif conditional.next:
@@ -112,7 +105,7 @@ class HTMLCompiler(pyjade.compiler.Compiler):
     def visitEach(self, each):
         obj = iteration(self._do_eval(each.obj), len(each.keys))
         for item in obj:
-            local_context = dict()
+            local_context = {}
             if len(each.keys) > 1:
                 for (key, value) in zip(each.keys, item):
                     local_context[key] = value

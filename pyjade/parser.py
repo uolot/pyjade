@@ -29,8 +29,7 @@ class Parser(object):
             n -= 1
 
     def peek(self):
-        p = self.lookahead(1)
-        return p
+        return self.lookahead(1)
 
     def line(self):
         return self.lexer.lineno
@@ -255,9 +254,11 @@ class Parser(object):
     def parseTag(self):
         i = 2
         if 'attrs'==self.lookahead(i).type: i += 1
-        if ':'==self.lookahead(i).type:
-            if 'indent' == self.lookahead(i+1).type:
-                return self.parseASTFilter
+        if (
+            ':' == self.lookahead(i).type
+            and 'indent' == self.lookahead(i + 1).type
+        ):
+            return self.parseASTFilter
 
         name = self.advance().val
         tag = nodes.Tag(name)

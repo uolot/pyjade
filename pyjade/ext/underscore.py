@@ -6,9 +6,8 @@ from pyjade.utils import process
 import six
 
 def process_param(key, value, terse=False):
-    if terse:
-        if (key == value) or (value is True):
-            return key
+    if terse and ((key == value) or (value is True)):
+        return key
     if isinstance(value, six.binary_type):
         value = value.decode('utf8')
     return '''%s="%s"''' % (key, value)
@@ -68,7 +67,7 @@ class Compiler(_Compiler):
     def _get_value(self, attr):
         value = attr['val']
         if attr['static']:
-            return attr['val']
+            return value
         if isinstance(value, six.string_types):
             return self._do_eval(value)
         else:

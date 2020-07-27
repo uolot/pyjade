@@ -26,9 +26,7 @@ class Loader(BaseLoader):
         if not self._cached_loaders:
             # Set self._cached_loaders atomically. Otherwise, another thread
             # could see an incomplete list. See #17303.
-            cached_loaders = []
-            for loader in self._loaders:
-                cached_loaders.append(find_template_loader(loader))
+            cached_loaders = [find_template_loader(loader) for loader in self._loaders]
             self._cached_loaders = cached_loaders
         return self._cached_loaders
 
